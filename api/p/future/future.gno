@@ -4,9 +4,9 @@ package future
 import ( 
 	"std"  
 	"time"
-    "errors"
+    "errors"  
   
-	"gno.land/p/demo/seqid"
+	"gno.land/p/demo/seqid" 
 )
 
 type Letter struct {
@@ -19,6 +19,16 @@ type Letter struct {
 	
 	SentAt time.Time
 	ScheduledAt time.Time
+}
+
+func (l *Letter) Body() string {
+	
+
+	return l.body
+}
+
+func (l *Letter) Attachment() string {
+	return l.attachment
 }
 
 type TimeMachine struct {
@@ -36,7 +46,7 @@ func (tm *TimeMachine) WriteLetter(Recipient string, body string, attachment str
 	
 	id := tm.IDCounter.Next().String()
 
-	scheduledAtParsed, err := time.Parse("2006-01-02T15:04:05", scheduledAt)
+	scheduledAtParsed, err := time.Parse(time.RFC822, scheduledAt)
 	if err != nil {
 		panic(err)
 	}
@@ -63,7 +73,7 @@ func (tm *TimeMachine) GetLetter(id string) *Letter {
 	}
 
 	return nil
-} 
+}
 
 func (tm *TimeMachine) ReadLetter(id string) (*Letter, error) {
 	letter := tm.GetLetter(id)
@@ -80,4 +90,19 @@ func (tm *TimeMachine) ReadLetter(id string) (*Letter, error) {
 
 func (tm *TimeMachine) GetLetters() []*Letter {
 	return tm.Letters
+}
+
+func (tm *TimeMachine) GetAvailableLetters() (ret []*Letter) {
+	for _, letter := range tm.Letters {
+		if time.Now().Before(letter.ScheduledAt) { 
+			continue
+		}
+		// ufmt.Println(std.PrevRealm().Addr().String())
+		if letter.Recipient != std.PrevRealm().Addr().String() {
+			continue
+		}
+		ret = append(ret, letter)
+	}
+
+	return
 }

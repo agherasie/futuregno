@@ -4,6 +4,8 @@ import (
 	"time"
 	
 	"gno.land/p/demo/future"
+	"gno.land/p/demo/json"
+	"gno.land/p/demo/ufmt"
 )
 
 var tm *future.TimeMachine
@@ -26,6 +28,33 @@ func ReadLetter(id string) *future.Letter {
 
 func GetLetters() []*future.Letter {
 	return tm.GetLetters()
+}
+
+func GetLettersJSON() string {
+	letters := tm.GetAvailableLetters()
+	if len(letters) == 0 {
+		return "[]"
+	}
+	jsonResponse := json.ArrayNode("", []*json.Node{})
+	for _, letter := range letters {
+		node := json.ObjectNode("", map[string]*json.Node{
+			"id": json.StringNode("id", letter.ID), 
+			"author": json.StringNode("author", letter.Author.String()),
+			"recipient": json.StringNode("recipient", letter.Recipient),
+			"body": json.StringNode("body", letter.Body()),
+			"scheduledAt": json.StringNode("scheduledAt", letter.ScheduledAt.String()),
+			"sentAt": json.StringNode("sentAt", letter.SentAt.String()),
+			"attachment": json.StringNode("attachment", letter.Attachment()),
+		})
+		jsonResponse.AppendArray(node)
+	}
+
+	b, err := json.Marshal(jsonResponse)
+    if err != nil {
+        ufmt.Errorf("error: %v", err)
+    }
+
+	return string(b)
 }
  
 func Render(path string) string {
