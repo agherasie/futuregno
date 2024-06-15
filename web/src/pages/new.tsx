@@ -8,17 +8,18 @@ const WriteLetter: FC = () => {
   const [date, setDate] = useState<string | null>(null);
   const [body, setBody] = useState<string | null>(null);
 
-  const handleSendLetter = useCallback(() => {
-    if (!receiver || !date || !body) {
+  const handleSendLetter = useCallback(async () => {
+    if (!receiver || !date || !body)
       throw new Error("invalid letter parameters");
-    }
+
+    const accountInfo = await AdenaService.getAccountInfo();
 
     AdenaService.sendTransaction(
       [
         {
           type: EMessageType.MSG_CALL,
           value: {
-            caller: receiver,
+            caller: accountInfo.address,
             send: "",
             pkg_path: Config.REALM_PATH,
             func: "WriteLetter",

@@ -4,7 +4,7 @@ import ProviderContext from "../context/ProviderContext";
 import Config from "../config";
 import { parsePostFetchResponse } from "../utils";
 import { AdenaService } from "../services/adena/adena";
-import { EMessageType, IAccountInfo } from "../services/adena/adena.types";
+import { EMessageType } from "../services/adena/adena.types";
 import { Letter } from "../types/letter";
 
 const HomePage: FC = () => {
@@ -12,11 +12,9 @@ const HomePage: FC = () => {
   const [letters, setLetters] = useState<Letter[]>([]);
 
   const handleFetchPosts = useCallback(async () => {
-    if (!provider) {
-      throw new Error("invalid chain RPC URL");
-    }
+    if (!provider) throw new Error("invalid chain RPC URL");
 
-    const accountInfo: IAccountInfo = await AdenaService.getAccountInfo();
+    const accountInfo = await AdenaService.getAccountInfo();
 
     const tx = await AdenaService.sendTransaction(
       [
@@ -82,11 +80,13 @@ const HomePage: FC = () => {
                   <b>Letter from</b> {letter.sentAt.toString().split(" ")[0]}
                 </p>
                 <br />
-                <p>Dear {letter.recipient},</p>
+                <p class="italic">Dear {letter.recipient},</p>
                 <br />
-                <p>{letter.body}</p>
+                <p class="whitespace-pre-wrap">
+                  {letter.body.replace(/\\n/g, "\n")}
+                </p>
                 <br />
-                <p class="text-right">From {letter.author}</p>
+                <p class="text-right italic">From {letter.author}</p>
               </span>
             </div>
           </div>
