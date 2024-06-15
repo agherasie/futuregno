@@ -1,18 +1,29 @@
-import { FC, useCallback, useState } from "preact/compat";
+import React, { FC, useCallback, useState } from "preact/compat";
 import { AdenaService } from "../services/adena/adena";
 import { EMessageType } from "../services/adena/adena.types";
 import Config from "../config";
+import { getBase64 } from "../utils";
 
 const WriteLetter: FC = () => {
   const [receiver, setReceiver] = useState<string | null>(null);
   const [date, setDate] = useState<string | null>(null);
   const [body, setBody] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // @ts-ignore
+    if (e.target.files)
+      // @ts-ignore
+      setFile(e.target.files[0]);
+  };
 
   const handleSendLetter = useCallback(async () => {
     if (!receiver || !date || !body)
       throw new Error("invalid letter parameters");
 
     const accountInfo = await AdenaService.getAccountInfo();
+
+    const base64Image = !file ? "" : await getBase64(file)!;
 
     AdenaService.sendTransaction(
       [
@@ -23,11 +34,16 @@ const WriteLetter: FC = () => {
             send: "",
             pkg_path: Config.REALM_PATH,
             func: "WriteLetter",
-            args: [receiver, body, "", new Date(date).getTime().toString()],
+            args: [
+              receiver,
+              body,
+              base64Image as string,
+              new Date(date).getTime().toString(),
+            ],
           },
         },
       ],
-      5000000
+      50000000
     ).then(() => {
       setReceiver(null);
       setDate(null);
@@ -77,6 +93,12 @@ const WriteLetter: FC = () => {
           onChange={(e) => setBody(e.currentTarget.value)}
           class="w-full h-64 p-2 text-gray-800 placeholder-gray-800 bg-blue-200 rounded-md"
           placeholder="Write your letter here..."
+        />
+        <input
+          id="file"
+          type="file"
+          accept={"image/*"}
+          onChange={handleFileChange}
         />
         <div class="flex-row space-y-2">
           <p class="text-white font-bold">Date</p>

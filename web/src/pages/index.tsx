@@ -36,11 +36,6 @@ const HomePage: FC = () => {
       atob(tx.deliver_tx.ResponseBase.Data!)
     );
 
-    // const response: string = await provider.evaluateExpression(
-    //   Config.REALM_PATH,
-    //   `GetLettersJSON()`
-    // );
-
     setLetters(response);
   }, [provider]);
 
@@ -86,7 +81,17 @@ const HomePage: FC = () => {
                   {letter.body.replace(/\\n/g, "\n")}
                 </p>
                 <br />
-                <p class="text-right italic">From {letter.author}</p>
+                <p class="text-right italic">From {letter.author}</p>{" "}
+                {letter.attachment && (
+                  <div>
+                    <i>Attachments</i>
+                    <img
+                      src={letter.attachment}
+                      alt="attachment"
+                      class="w-40"
+                    />
+                  </div>
+                )}
               </span>
             </div>
           </div>
