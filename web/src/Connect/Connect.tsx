@@ -7,7 +7,7 @@ import { IConnectProps } from "./connect.types";
 import Config from "../config";
 
 const Connect: FC<IConnectProps> = () => {
-  const { setChainID, setAddress } = useContext(AccountContext);
+  const { setChainID, setAddress, address } = useContext(AccountContext);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleWalletConnect = async () => {
@@ -36,13 +36,13 @@ const Connect: FC<IConnectProps> = () => {
   return (
     <button
       class={`text-white rounded-md p-4 w-40 text-sm ${
-        isLoading
+        isLoading || !address
           ? "bg-blue-400 cursor-not-allowed"
           : "bg-blue-600 hover:bg-blue-700"
       }`}
-      onClick={handleWalletConnect}
+      onClick={isLoading || !address ? undefined : handleWalletConnect}
     >
-      {isLoading ? "CONNECTING..." : "CONNECT WALLET"}
+      {isLoading ? "CONNECTING..." : !address ? "CONNECTED" : "CONNECT WALLET"}
     </button>
   );
 };
