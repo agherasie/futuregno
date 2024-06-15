@@ -22,8 +22,6 @@ type Letter struct {
 }
 
 func (l *Letter) Body() string {
-	
-
 	return l.body
 }
 
@@ -42,14 +40,8 @@ func NewTimeMachine() *TimeMachine {
 	}
 }
 
-func (tm *TimeMachine) WriteLetter(Recipient string, body string, attachment string, scheduledAt string) string {
-	
+func (tm *TimeMachine) WriteLetter(Recipient string, body string, attachment string, scheduledAt int64) string {
 	id := tm.IDCounter.Next().String()
-
-	scheduledAtParsed, err := time.Parse(time.RFC822, scheduledAt)
-	if err != nil {
-		panic(err)
-	}
 
 	newLetter := &Letter{
 		ID: id,
@@ -58,7 +50,7 @@ func (tm *TimeMachine) WriteLetter(Recipient string, body string, attachment str
 		body: body,
 		attachment: attachment,
 		SentAt: time.Now(),
-		ScheduledAt: scheduledAtParsed,
+		ScheduledAt: time.UnixMilli(scheduledAt),
 	}
 
 	tm.Letters = append(tm.Letters, newLetter)
@@ -96,8 +88,7 @@ func (tm *TimeMachine) GetAvailableLetters() (ret []*Letter) {
 	for _, letter := range tm.Letters {
 		if time.Now().Before(letter.ScheduledAt) { 
 			continue
-		}
-		// ufmt.Println(std.PrevRealm().Addr().String())
+		} 
 		if letter.Recipient != std.PrevRealm().Addr().String() {
 			continue
 		}

@@ -48,35 +48,47 @@ const HomePage: FC = () => {
 
   return (
     <div class="w-full p-8">
+      <div class="flex space-x-4">
+        <button
+          onClick={() => {
+            window.open(document.location.origin + "/new", "_self");
+          }}
+          class="text-white rounded-md p-2 text-sm bg-blue-600 hover:bg-blue-700"
+        >
+          Write a letter
+        </button>
+        <button
+          class="text-white rounded-md p-2 text-sm bg-blue-600 hover:bg-blue-700"
+          onClick={handleFetchPosts}
+        >
+          Fetch
+        </button>
+      </div>
       <div class="justify-center w-full text-center space-y-4">
         <h1 class="text-white text-3xl font-black">FutureGno</h1>
         <Connect />
       </div>
-      <button
-        class="text-white rounded-md p-2 text-sm bg-blue-600 hover:bg-blue-700"
-        onClick={handleFetchPosts}
-      >
-        Fetch
-      </button>
-      <div class="space-y-6 py-4">
+
+      <div class="space-y-6 py-8 ">
         {letters.map((letter) => (
-          <div key={letter.id} class="p-4 rounded-md bg-gray-200 space-y-4">
-            <div>
-              <h2 class="italic">
-                <b>From</b> {letter.author}
-              </h2>
-              <h2 class="italic">
-                <b>To</b> {letter.recipient}
-              </h2>
-              <p class="italic">
-                <b>Scheduled for</b>{" "}
-                {new Date(letter.scheduledAt).toLocaleDateString("fr-FR")}
-              </p>
-              <p class="italic">
-                <b>Sent at</b> {letter.sentAt}
-              </p>
+          <div key={letter.id}>
+            <p class="text-gray-500">
+              Available since{" "}
+              {new Date(letter.scheduledAt).toLocaleDateString("fr-FR")}
+            </p>
+            <div class="p-4 rounded-md bg-gray-300 space-y-4">
+              <span class="w-full text-gray-800">
+                <p class="font-bold">
+                  <b>Letter from</b> {letter.sentAt.toString().split(" ")[0]}
+                </p>
+                <br />
+                <p>Dear {letter.recipient},</p>
+                <br />
+                <p>{letter.body}</p>
+                <br />
+                <p class="text-right">From {letter.author}</p>
+              </span>
             </div>
-            <p class="">{letter.body}</p>
           </div>
         ))}
       </div>

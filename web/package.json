@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@gnolang/gno-js-client": "^1.2.3",
-    "preact": "^10.19.6"
+    "preact": "^10.19.6",
+    "react-router-dom": "^6.23.1",
+    "vite-plugin-node-polyfills": "^0.22.0"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.8.2",

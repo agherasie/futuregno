@@ -14,7 +14,7 @@ func init() {
 	tm = future.NewTimeMachine()
 }
 
-func WriteLetter(Recipient string, body string, attachment string, scheduledAt string) string {
+func WriteLetter(Recipient string, body string, attachment string, scheduledAt int64) string {
 	return tm.WriteLetter(Recipient, body, attachment, scheduledAt)
 }
 
@@ -31,7 +31,7 @@ func GetLetters() []*future.Letter {
 }
 
 func GetLettersJSON() string {
-	letters := tm.GetAvailableLetters()
+	letters := tm.GetLetters()
 	if len(letters) == 0 {
 		return "[]"
 	}
