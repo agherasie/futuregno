@@ -3,10 +3,9 @@ package future
 
 import ( 
 	"std"  
-	"time"
-    "errors"  
+	"time" 
   
-	"gno.land/p/demo/seqid" 
+	"gno.land/p/demo/seqid"
 )
 
 type Letter struct {
@@ -43,6 +42,14 @@ func NewTimeMachine() *TimeMachine {
 func (tm *TimeMachine) WriteLetter(Recipient string, body string, attachment string, scheduledAt int64) string {
 	id := tm.IDCounter.Next().String()
 
+	if scheduledAt == 0 {
+		scheduledAt = time.Now().UnixMilli()
+	}
+
+	if scheduledAt < time.Now().UnixMilli() {
+		panic("Cannot schedule letter in the past")
+	}
+
 	newLetter := &Letter{
 		ID: id,
 		Author: std.PrevRealm().Addr(),
@@ -67,24 +74,22 @@ func (tm *TimeMachine) GetLetter(id string) *Letter {
 	return nil
 }
 
-func (tm *TimeMachine) ReadLetter(id string) (*Letter, error) {
+func (tm *TimeMachine) ReadLetter(id string) *Letter {
 	letter := tm.GetLetter(id)
 	if letter == nil {
-		return nil, errors.New("Letter not found")
+		panic("Letter not found")
 	}
-
-	if time.Now().After(letter.ScheduledAt) {
-		return letter, nil
+	if time.Now().Before(letter.ScheduledAt) {
+		panic("Letter not available yet")
 	}
-
-	return nil, errors.New("Letter not yet available")
+	return letter
 }
 
 func (tm *TimeMachine) GetLetters() []*Letter {
 	return tm.Letters
 }
 
-func (tm *TimeMachine) GetAvailableLetters() (ret []*Letter) {
+func (tm *TimeMachine) GetAvailableLetters() (ret []*Letter) { 
 	for _, letter := range tm.Letters {
 		if time.Now().Before(letter.ScheduledAt) { 
 			continue

@@ -19,11 +19,7 @@ func WriteLetter(Recipient string, body string, attachment string, scheduledAt i
 }
 
 func ReadLetter(id string) *future.Letter {
-	letter, err := tm.ReadLetter(id)
-	if err != nil {
-		panic(err)
-	}
-	return letter
+	return tm.ReadLetter(id)
 }
 
 func GetLetters() []*future.Letter {
